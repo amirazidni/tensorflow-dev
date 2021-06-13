@@ -12,18 +12,18 @@
 # Desired loss (MSE) < 1e-4
 # =================================================================================
 
-
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-
 
 def solution_A1():
     X = np.array([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0], dtype=float)
     Y = np.array([5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, ], dtype=float)
 
     # YOUR CODE HERE
-
+    model = tf.keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
+    model.compile(optimizer='sgd', loss='mean_squared_error')
+    model.fit(X,Y, epochs=1000, verbose=0)
 
     print(model.predict([-2.0, 10.0]))
     return model

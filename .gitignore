@@ -1,3 +1,7 @@
 # Default ignored files
 venv/
 .idea/
+Submission A/data/
+*.zip
+*.h5
+*.csv

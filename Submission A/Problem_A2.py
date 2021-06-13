@@ -18,6 +18,12 @@ import os
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import RMSprop
 
+class callback83(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs={}):
+    if(logs.get('accuracy')>0.835 and logs.get('val_accuracy')>0.835):
+      print("\nTraining selesai, akurasi mencapai 83%.")
+      self.model.stop_training = True
+
 
 def solution_A2():
     data_url_1 = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/horse-or-human.zip'
@@ -33,20 +39,53 @@ def solution_A2():
     zip_ref.extractall('data/validation-horse-or-human')
     zip_ref.close()
 
-
     TRAINING_DIR = 'data/horse-or-human'
-    train_datagen = ImageDataGenerator(
-        # YOUR CODE HERE)
+    train_datagen = ImageDataGenerator(rescale = 1./255.)
 
-    
-    train_generator = # YOUR CODE HERE
+    train_generator = train_datagen.flow_from_directory(
+        TRAINING_DIR,
+        batch_size=20,
+        class_mode='binary',
+        target_size=(150, 150)
+    )
+
+    VAL_DIR = 'data/validation-horse-or-human'
+    val_datagen = ImageDataGenerator(rescale=1. / 255.)
+    val_generator = val_datagen.flow_from_directory(
+        VAL_DIR,
+        batch_size=32,
+        class_mode='binary',
+        target_size=(150, 150)
+    )
+    callbacks = callback83()
 
     model = tf.keras.models.Sequential([
-        # YOUR CODE HERE, end with a Neuron Dense, activated by sigmoid
-                tf.keras.layers.Dense(1, activation='sigmoid')
-        ])
-
-
+        tf.keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(150, 150, 3)),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(512, activation='relu'),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+    model.compile(
+        loss='binary_crossentropy',
+        optimizer=RMSprop(learning_rate=0.001),
+        metrics=['accuracy']
+    )
+    model.fit(
+        train_generator,
+        steps_per_epoch=8,
+        validation_data=val_generator,
+        validation_steps=8,
+        epochs=100,
+        verbose=2,
+        callbacks=[callbacks]
+    )
     return model
 
 

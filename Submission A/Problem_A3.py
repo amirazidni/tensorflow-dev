@@ -21,17 +21,29 @@ from tensorflow.keras import layers
 from tensorflow.keras import Model
 from tensorflow.keras.applications.inception_v3 import InceptionV3
 
+class callback93(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs={}):
+    if logs.get('accuracy') > 0.935 and logs.get('val_accuracy')>0.935:
+      print("\nTraining selesai, akurasi mencapai 93%.")
+      self.model.stop_training = True
+
 def solution_A3():
-    inceptionv3='https://storage.googleapis.com/mledu-datasets/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
+    inceptionv3 = 'https://storage.googleapis.com/mledu-datasets/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
     urllib.request.urlretrieve(inceptionv3, 'inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5')
     local_weights_file = 'inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
 
-    pre_trained_model = # YOUR CODE HERE
+    pre_trained_model = InceptionV3(
+        input_shape=(150, 150, 3),
+        include_top=False,
+        weights=None
+    )
+    pre_trained_model.load_weights(local_weights_file)
 
-        for layer in pre_trained_model.layers:
+    for layer in pre_trained_model.layers:
         layer.trainable = False
 
-    last_layer = # YOUR CODE HERE
+    last_layer = pre_trained_model.get_layer('mixed5')
+    last_output = last_layer.output
 
     data_url_1 = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/horse-or-human.zip'
     urllib.request.urlretrieve(data_url_1, 'horse-or-human.zip')
@@ -46,25 +58,55 @@ def solution_A3():
     zip_ref.extractall('data/validation-horse-or-human')
     zip_ref.close()
 
-    
-    x = # YOUR CODE HERE, BUT END WITH A Neuron Dense, activated by sigmoid
+    x = layers.Flatten()(last_output)
+    x = layers.Dense(512, activation='relu')(x)
+    x = layers.Dropout(0.15)(x)
     x = layers.Dense(1, activation='sigmoid')(x)
 
     model = Model(pre_trained_model.input, x)
 
-    model.compile(optimizer=RMSprop(lr=0.0001),
+    model.compile(optimizer=RMSprop(learning_rate=0.0001),
                   loss='binary_crossentropy',
-                  metrics=['acc'])
+                  metrics=['accuracy'])
 
     train_dir = 'data/horse-or-human'
     validation_dir = 'data/validation-horse-or-human'
 
     train_datagen = ImageDataGenerator(
-        # YOUR CODE HERE
+        rescale=1. / 255.,
+        rotation_range=20,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True
+    )
 
-    train_generator = # YOUR CODE HERE
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        batch_size=20,
+        class_mode='binary',
+        target_size=(150, 150)
+    )
+    val_datagen = ImageDataGenerator(
+        rescale=1. / 255.
+    )
+    val_generator = val_datagen.flow_from_directory(
+        validation_dir,
+        batch_size=32,
+        class_mode='binary',
+        target_size=(150, 150)
+    )
 
+    callbacks = callback93()
 
+    model.fit(
+        train_generator,
+        validation_data=val_generator,
+        epochs=100,
+        verbose=2,
+        callbacks=[callbacks]
+    )
     return model
 
 # The code below is to save your model as a .h5 file.
