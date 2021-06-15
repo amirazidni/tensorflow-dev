@@ -13,6 +13,11 @@
 
 import tensorflow as tf
 
+class Callback2(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs={}):
+    if logs.get('accuracy') > 0.9 and logs.get('val_accuracy') > 0.9:
+      print("\nTraining selesai, akurasi melebihi 83%.")
+      self.model.stop_training = True
 
 def solution_B2():
     fashion_mnist = tf.keras.datasets.fashion_mnist
