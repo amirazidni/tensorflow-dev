@@ -21,10 +21,10 @@ from tensorflow.keras import layers
 from tensorflow.keras import Model
 from tensorflow.keras.applications.inception_v3 import InceptionV3
 
-class callback93(tf.keras.callbacks.Callback):
+class callback97(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
-    if logs.get('accuracy') > 0.935 and logs.get('val_accuracy')>0.935:
-      print("\nTraining selesai, akurasi mencapai 93%.")
+    if(logs.get('accuracy')>0.975 and logs.get('val_accuracy')>0.975):
+      print("\nTraining selesai, akurasi mencapai 97%.")
       self.model.stop_training = True
 
 def solution_A3():
@@ -98,7 +98,7 @@ def solution_A3():
         target_size=(150, 150)
     )
 
-    callbacks = callback93()
+    callbacks = callback97()
 
     model.fit(
         train_generator,

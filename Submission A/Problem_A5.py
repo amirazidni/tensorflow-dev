@@ -16,10 +16,10 @@ import tensorflow as tf
 import numpy as np
 import urllib.request
 
-class MAE015(tf.keras.callbacks.Callback):
+class MAE012(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
-       if(logs.get('mae') < 0.155):
-          print("\nTraining selesai, mencapai mae < 0.15.")
+       if(logs.get('mae') < 0.12):
+          print("\nTraining selesai, mencapai mae < 0.12.")
           self.model.stop_training = True
 
 # DO NOT CHANGE THIS CODE
@@ -90,14 +90,12 @@ def solution_A5():
 
     model.compile(
         loss=tf.keras.losses.Huber(),
-        optimizer=tf.keras.optimizers.SGD(learning_rate=1e-8, momentum=0.9),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=1e-5, momentum=0.9),
         metrics=["mae"]
     )
-    callbacks5 = tf.keras.callbacks.LearningRateScheduler(
-        lambda epoch: 1e-8 * 10 ** (epoch / 20))
-
-    callback = MAE015()
-    model.fit(
+    callbacks5 = tf.keras.callbacks.LearningRateScheduler(lambda epoch: 1e-8 * 10 ** (epoch / 20))
+    callback = MAE012()
+    history = model.fit(
         train_set,
         epochs=200,
         verbose=0,

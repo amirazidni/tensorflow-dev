@@ -18,8 +18,8 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 class callback83(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
-    if(logs.get('accuracy')>0.835 and logs.get('val_accuracy')>0.835):
-      print("\nTraining selesai, akurasi mencapai 83%.")
+    if(logs.get('accuracy')>0.84 and logs.get('val_accuracy')>0.84):
+      print("\nTraining selesai, akurasi mencapai > 83%.")
       self.model.stop_training = True
 
 def solution_A4():
@@ -61,14 +61,16 @@ def solution_A4():
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(8, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     model.compile(
         loss='binary_crossentropy',
-        optimizer='adam',
-        metrics=['accuracy']
-    )
+        optimizer=RMSprop(),
+        metrics=['accuracy'])
 
     sequences = tokenizer.texts_to_sequences(training_sentences)
     padded = pad_sequences(sequences, maxlen=max_length, truncating=trunc_type)
@@ -85,7 +87,6 @@ def solution_A4():
         verbose=2,
         callbacks=[callbacks]
     )
-
     return model
 
 
