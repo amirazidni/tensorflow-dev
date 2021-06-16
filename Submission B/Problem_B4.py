@@ -13,9 +13,16 @@
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
+from tensorflow import keras
 import pandas as pd
+import numpy as np
 
+def splitter(data, training_portion):
+    train = data[:training_portion]
+    test = data[training_portion:]
+    return train, test
 
 def solution_B4():
     bbc = pd.read_csv('https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/bbc-text.csv')
@@ -28,14 +35,43 @@ def solution_B4():
     oov_tok = "<OOV>"
     training_portion = .8
 
-    # YOUR CODE HERE
+    train_size = int(len(bbc) * training_portion)
 
-    tokenizer =  # YOUR CODE HERE
+    # Splitting data
+    train_labels, validation_labels = splitter(bbc['category'], train_size)
+    train_sentences, validation_sentences = splitter(bbc['text'], train_size)
+
+    tokenizer = Tokenizer(num_words=vocab_size, char_level=False, oov_token=oov_tok)
+    tokenizer.fit_on_texts(train_sentences)
+    x_train = tokenizer.texts_to_matrix(train_sentences)
+    x_test = tokenizer.texts_to_matrix(validation_sentences)
+
+    encoder = LabelEncoder()
+    encoder.fit(train_labels)
+    y_train = encoder.transform(train_labels)
+    y_test = encoder.transform(validation_labels)
+
+    num_classes = np.max(y_train) + 1
+    y_train = keras.utils.to_categorical(y_train, num_classes)
+    y_test = keras.utils.to_categorical(y_test, num_classes)
 
     model = tf.keras.Sequential([
-        # YOUR CODE HERE. DO not change the last layer or test may fail
-        tf.keras.layers.Dense(5, activation='softmax')
+        tf.keras.layers.Dense(512, activation='relu', input_shape=(vocab_size,)),
+        tf.keras.layers.Dense(5, activation='softmax'),
     ])
+
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy']
+                  )
+
+    model.fit(
+        x_train,
+        y_train,
+        batch_size=32,
+        epochs=10,
+        validation_data=(x_test, y_test),
+        verbose=2)
 
     return model
 
