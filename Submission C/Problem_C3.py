@@ -19,6 +19,11 @@ import os
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+class Callback3(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs={}):
+    if logs.get('accuracy') > 0.73 and logs.get('val_accuracy') > 0.73:
+      print("\nTraining selesai, akurasi tercapai")
+      self.model.stop_training = True
 
 def solution_C3():
     data_url = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/cats_and_dogs.zip'
@@ -28,18 +33,55 @@ def solution_C3():
     zip_ref.extractall('data/')
     zip_ref.close()
 
-    BASE_DIR = 'data/cats_and_dogs'
+    BASE_DIR = 'data/cats_and_dogs_filtered'
     train_dir = os.path.join(BASE_DIR, 'train')
     validation_dir = os.path.join(BASE_DIR, 'validation')
 
-    train_datagen =  # YOUR CODE HERE
+    train_datagen = ImageDataGenerator(
+        horizontal_flip=True,
+        rescale=1. / 255.,
+        rotation_range=20,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        fill_mode='nearest'
+    )
 
-    train_generator =  # YOUR CODE HERE
-
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        batch_size=20,
+        class_mode='binary',
+        target_size=(150, 150)
+    )
+    validation_datagen = ImageDataGenerator(rescale=1. / 255.)
+    validation_generator = validation_datagen.flow_from_directory(
+        validation_dir,
+        batch_size=20,
+        class_mode='binary',
+        target_size=(150, 150)
+    )
     model = tf.keras.models.Sequential([
-        # YOUR CODE HERE, end with a Neuron Dense, activated by 'sigmoid'
+        tf.keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(150, 150, 3)),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(512, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
+    model.compile(optimizer=RMSprop(),
+                  loss='binary_crossentropy',
+                  metrics=['accuracy']
+                  )
+    model.fit(train_generator,
+                        epochs=20,
+                        verbose=2,
+                        validation_data=validation_generator,
+                        callbacks=[Callback3()]
+                        )
 
     return model
 
