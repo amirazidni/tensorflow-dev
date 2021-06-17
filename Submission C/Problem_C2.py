@@ -23,6 +23,5 @@ def solution_C2():
 # The code below is to save your model as a .h5 file.
 # It will be saved automatically in your Submission folder.
 if __name__ == '__main__':
-    if __name__ == '__main__':
-        model = solution_C2()
-        model.save("model_C2.h5")
+    model = solution_C2()
+    model.save("model_C2.h5")
