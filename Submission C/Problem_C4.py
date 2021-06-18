@@ -38,6 +38,8 @@ def solution_C4():
     oov_tok = "<OOV>"
     training_size = 20000
 
+    sentences = []
+    labels = []
 
     with open('sarcasm.json', 'r') as f:
         data = f.readlines()
@@ -47,8 +49,6 @@ def solution_C4():
     # Splitting data
     train_labels, validation_labels = splitter(datastore['is_sarcastic'], training_size)
     train_sentences, validation_sentences = splitter(datastore['headline'], training_size)
-    training_labels_final = np.array(train_labels)
-    testing_labels_final = np.array(validation_labels)
 
     tokenizer = Tokenizer(num_words=vocab_size, oov_token=oov_tok)
     tokenizer.fit_on_texts(train_sentences)
@@ -61,11 +61,9 @@ def solution_C4():
 
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64, return_sequences=True)),
+        tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32)),
+        tf.keras.layers.Dense(512, activation="relu"),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     model.compile(
@@ -80,9 +78,9 @@ def solution_C4():
 
     model.fit(
         padded,
-        training_labels_final,
+        train_labels,
         epochs=10,
-        validation_data=(testing_padded, testing_labels_final),
+        validation_data=(testing_padded, validation_labels),
         verbose=2
     )
     return model
