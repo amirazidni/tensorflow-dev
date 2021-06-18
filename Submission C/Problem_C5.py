@@ -19,7 +19,7 @@ import urllib
 
 class MAE02(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
-       if logs.get('mae') < 0.18:
+       if logs.get('mae') < 0.17:
           print("\nTraining selesai, mencapai mae < 0.19")
           self.model.stop_training = True
 
@@ -80,8 +80,8 @@ def solution_C5():
                                strides=1, padding="causal",
                                activation="relu",
                                input_shape=[None, 1]),
-        tf.keras.layers.LSTM(60, return_sequences=True),
-        tf.keras.layers.LSTM(60, return_sequences=True),
+        tf.keras.layers.LSTM(128, return_sequences=True),
+        tf.keras.layers.LSTM(64, return_sequences=True),
         tf.keras.layers.Dense(30, input_shape=[window_size], activation="relu"),
         tf.keras.layers.Dense(10, activation="relu"),
         tf.keras.layers.Dense(1)
@@ -95,7 +95,7 @@ def solution_C5():
 
     model.fit(train_set,
                         epochs=150,
-                        verbose=1,
+                        verbose=0,
                         callbacks=[MAE02(), callbacks5]
                         )
     return model
