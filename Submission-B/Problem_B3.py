@@ -18,7 +18,7 @@ import os
 from keras_preprocessing.image import ImageDataGenerator
 
 def solution_B3():
-    data_url = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/rps.zip'
+    data_url = 'https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/rps.zip'
     urllib.request.urlretrieve(data_url, 'rps.zip')
     local_file = 'rps.zip'
     zip_ref = zipfile.ZipFile(local_file, 'r')

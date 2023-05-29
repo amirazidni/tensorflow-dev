@@ -25,7 +25,7 @@ def splitter(data, training_portion):
     return train, test
 
 def solution_B4():
-    bbc = pd.read_csv('https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/bbc-text.csv')
+    bbc = pd.read_csv('https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/bbc-text.csv')
     
     vocab_size = 1000
     embedding_dim = 16

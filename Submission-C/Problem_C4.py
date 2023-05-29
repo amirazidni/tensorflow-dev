@@ -27,7 +27,7 @@ def splitter(data, training_portion):
     return train, test
 
 def solution_C4():
-    data_url = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/sarcasm.json'
+    data_url = 'https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/sarcasm.json'
     urllib.request.urlretrieve(data_url, 'sarcasm.json')
 
     vocab_size = 1000

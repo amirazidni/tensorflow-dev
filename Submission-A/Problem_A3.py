@@ -45,13 +45,13 @@ def solution_A3():
     last_layer = pre_trained_model.get_layer('mixed5')
     last_output = last_layer.output
 
-    data_url_1 = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/horse-or-human.zip'
+    data_url_1 = 'https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/horse-or-human.zip'
     urllib.request.urlretrieve(data_url_1, 'horse-or-human.zip')
     local_file = 'horse-or-human.zip'
     zip_ref = zipfile.ZipFile(local_file, 'r')
     zip_ref.extractall('data/horse-or-human')
 
-    data_url_2 = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/validation-horse-or-human.zip'
+    data_url_2 = 'https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/validation-horse-or-human.zip'
     urllib.request.urlretrieve(data_url_2, 'validation-horse-or-human.zip')
     local_file = 'validation-horse-or-human.zip'
     zip_ref = zipfile.ZipFile(local_file, 'r')

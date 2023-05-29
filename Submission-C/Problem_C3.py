@@ -26,7 +26,7 @@ class Callback3(tf.keras.callbacks.Callback):
       self.model.stop_training = True
 
 def solution_C3():
-    data_url = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/cats_and_dogs.zip'
+    data_url = 'https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/cats_and_dogs.zip'
     urllib.request.urlretrieve(data_url, 'cats_and_dogs.zip')
     local_file = 'cats_and_dogs.zip'
     zip_ref = zipfile.ZipFile(local_file, 'r')

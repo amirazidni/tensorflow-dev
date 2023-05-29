@@ -34,7 +34,7 @@ def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
 
 
 def solution_A5():
-    data_url = 'https://dicodingacademy.blob.core.windows.net/picodiploma/Simulation/machine_learning/sunspots.csv'
+    data_url = 'https://academy.blob.core.windows.net/picodiploma/Simulation/machine_learning/sunspots.csv'
     urllib.request.urlretrieve(data_url, 'sunspots.csv')
 
     time_step = []
